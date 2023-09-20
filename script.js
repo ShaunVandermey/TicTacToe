@@ -1,57 +1,140 @@
-//let gridObjects = document.getElementById("gridObjects");
 
-//factory
-const personFactory = (myTurn) => {
-    const changeTurn = () => myTurn = !myTurn;
-    const returnTurn = () => myTurn;
-    return {changeTurn, returnTurn};
-}
-
-//factory: create a new object and add it to the document, slotting it into an array
-const gridObjectFactory = (index) => {
-    const addPanel = () => {
-        gridObjects = document.getElementById("gridObjects");
-        newPanel = document.createElement("div");
-        gridObjects.appendChild(newPanel);
-        return newPanel;
-    };
-
-    const panelIndex = index;
-
-    const returnIndex = () => {return panelIndex};
-
-    return{
-        returnIndex, addPanel
-    }
-
-
-}
-
-//test
-const panelArray = [];
-for (let index = 0; index < 9; index++) {
-    var panel = gridObjectFactory(index);
-    panel.addPanel();
-    panel.returnIndex();
-    panelArray.push(panel);
-}
-
+//const panelArray = [];
 
 
 //module
-const gameboardModule = (() => {
+const gameManagerModule = (() => {
+
+    const panelArray = [];
+
+
+    function beginGameLogic(){
+        //create players (no AI atm, give one X and one O)
+        const player1 = personFactory("X");
+        const player2 = personFactory("O");
+        const currentPlayer = player1;
+        //create grid (3x3 for now, expandable later)
+        for (let index = 1; index <= 9; index++) {
+            var panel = gridObjectFactory(index);
+            panelArray.push(panel);
+        }
+    }
 
     //the scope is wrapped in here, nothing can access this
+    //massive algo to check for victory
     function checkVictory(){
+
+    }
+
+    //debug function mostly
+    function sayIndex(index){
+        alert(index);
+    }
+
+    //applies the current player's marker to the panel of index, if that index is free
+    function applyMarker(index){
+        item = panelArray[index];
+        if(item.mySymbol != null){
+            //apply current player's marker, switch to other player
+            item.assignSymbol(currentPlayer.returnSymbol());
+            if(currentPlayer === player1){
+                currentPlayer = player2;
+            }
+            else{
+                currentPlayer = player1;
+            }
+        }
+        else{
+            alert("You can't play on a tile that's already got a symbol!");
+        }
 
     }
 
     //and then we have to explicitly return the things we want to access
     return{
-        checkForVictory: checkVictory
+        beginGameLogic,
+        checkForVictory: checkVictory,
+        sayIndex: sayIndex,
+        applyMarker
     }
 
 })();
+
+
+//factory
+const personFactory = (playerSymbol) => {
+    const personObject = Object.create(null, {
+        mySymbol:{
+            value: playerSymbol,
+            writable: false
+        },
+        returnSymbol:{
+            value: function(){
+                return this.mySymbol;
+            
+            },
+            writable: false
+        }
+    });
+
+    return personObject;
+}
+
+//factory: create a new object and add it to the document, slotting it into an array
+const gridObjectFactory = (index) => {
+    const gridObjects = document.getElementById("gridObjects");
+    const newPanel = document.createElement("div");
+    newPanel.classList.add("gridPanel");
+    newPanel.addEventListener("click", function(){
+        gameManagerModule.sayIndex(panelObject.returnIndex());
+    });
+    gridObjects.appendChild(newPanel);
+
+    const panelObject = Object.create(null, {
+        myObject:{
+            value: newPanel,
+            writable: true
+        },
+        returnObject:{
+            value: function(){
+                return this.myObject;
+            },
+            writable: false
+        },
+        panelIndex:{
+            value: index,
+            writable: false
+        },
+        returnIndex:{
+            value: function(){
+                return this.panelIndex;
+            },
+            writable: false
+        },
+        mySymbol:{
+            value: null,
+            writable: true
+        },
+        assignSymbol:{
+            value: function(symbol){
+                this.mySymbol = symbol;
+                this.returnObject().textContent = symbol;
+            },
+            writable: false
+        },
+    });
+
+    return panelObject;
+
+
+}
+
+//test
+
+
+
+
+
 //ok, let's list all the things we need to be able to do
 //have an array of tiles that are clickable
 //when tile is clicked, the current player places their marker in that space
@@ -78,3 +161,5 @@ const gameboardModule = (() => {
 //createGame(widthOfGrid)
 //var players[]
 //var currentPlayer
+
+gameManagerModule.beginGameLogic();
