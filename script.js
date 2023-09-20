@@ -6,13 +6,15 @@
 const gameManagerModule = (() => {
 
     const panelArray = [];
-
+    let currentPlayer = null;
+    let player1 = null;
+    let player2 = null;
 
     function beginGameLogic(){
         //create players (no AI atm, give one X and one O)
-        const player1 = personFactory("X");
-        const player2 = personFactory("O");
-        const currentPlayer = player1;
+        player1 = personFactory("X");
+        player2 = personFactory("O");
+        currentPlayer = player1;
         //create grid (3x3 for now, expandable later)
         for (let index = 1; index <= 9; index++) {
             var panel = gridObjectFactory(index);
@@ -28,13 +30,13 @@ const gameManagerModule = (() => {
 
     //debug function mostly
     function sayIndex(index){
-        alert(index);
+        //alert(index);
     }
 
     //applies the current player's marker to the panel of index, if that index is free
     function applyMarker(index){
-        item = panelArray[index];
-        if(item.mySymbol != null){
+        item = panelArray[index-1];
+        if(!item.hasSymbol){
             //apply current player's marker, switch to other player
             item.assignSymbol(currentPlayer.returnSymbol());
             if(currentPlayer === player1){
@@ -43,6 +45,7 @@ const gameManagerModule = (() => {
             else{
                 currentPlayer = player1;
             }
+            item.hasSymbol = true;
         }
         else{
             alert("You can't play on a tile that's already got a symbol!");
@@ -86,7 +89,7 @@ const gridObjectFactory = (index) => {
     const newPanel = document.createElement("div");
     newPanel.classList.add("gridPanel");
     newPanel.addEventListener("click", function(){
-        gameManagerModule.sayIndex(panelObject.returnIndex());
+        gameManagerModule.applyMarker(panelObject.returnIndex());
     });
     gridObjects.appendChild(newPanel);
 
@@ -95,11 +98,9 @@ const gridObjectFactory = (index) => {
             value: newPanel,
             writable: true
         },
-        returnObject:{
-            value: function(){
-                return this.myObject;
-            },
-            writable: false
+        hasSymbol:{
+            value: false,
+            writable: true
         },
         panelIndex:{
             value: index,
@@ -118,7 +119,8 @@ const gridObjectFactory = (index) => {
         assignSymbol:{
             value: function(symbol){
                 this.mySymbol = symbol;
-                this.returnObject().textContent = symbol;
+                this.myObject.textContent = symbol;
+                //alert(symbol);
             },
             writable: false
         },
