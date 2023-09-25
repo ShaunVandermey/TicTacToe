@@ -5,20 +5,50 @@
 //module
 const gameManagerModule = (() => {
 
-    const panelArray = [];
+    let panelArray = [];
     let currentPlayer = null;
     let player1 = null;
     let player2 = null;
 
-    function beginGameLogic(){
+    function beginGameLogic(width){
         //create players (no AI atm, give one X and one O)
         player1 = personFactory("X");
         player2 = personFactory("O");
         currentPlayer = player1;
-        //create grid (3x3 for now, expandable later) TODO
-        for (let index = 1; index <= 9; index++) {
+        //create grid (3x3 for now, expandable on subsequent resets)
+        for (let index = 1; index <= width * width; index++) {
             var panel = gridObjectFactory(index);
             panelArray.push(panel);
+        }
+    }
+
+    function updateWidth(){
+        //get the correct element and if it is a number within certain amount,
+        //like 3x3 to 10x10, update the currentWidth var to be that number
+        //then reset grid (needs function TODO)
+        currentWidth = document.getElementById("widthInput").value;
+        if (!isNaN(currentWidth)){
+            if (currentWidth >= minWidth && currentWidth <= maxWidth){
+                //the number is within bounds
+                resetGrid();
+                parseInt(currentWidth);
+                panelArray = [];
+                document.documentElement.style.setProperty('--current_width', currentWidth);
+                beginGameLogic(currentWidth);
+            }
+            else{
+                alert("The new width must be between "+ minWidth +" and "+ maxWidth +" (inclusive)");
+            }
+        }
+        else{
+            alert("The new width needs to be a number.")
+        }
+    }
+
+    function resetGrid(){
+        let gridChildren = document.getElementById("gridObjects");
+        while (gridChildren.firstChild) {
+            gridChildren.removeChild(gridChildren.lastChild);
         }
     }
 
@@ -58,7 +88,8 @@ const gameManagerModule = (() => {
         beginGameLogic,
         checkForVictory: checkVictory,
         sayIndex: sayIndex,
-        applyMarker
+        applyMarker,
+        updateWidth
     }
 
 })();
@@ -164,4 +195,9 @@ const gridObjectFactory = (index) => {
 //var players[]
 //var currentPlayer
 
-gameManagerModule.beginGameLogic();
+//initialise at 3, let them create their own width on resets
+let currentWidth = 3;
+let minWidth = 3;
+let maxWidth = 10;
+document.getElementById("resetButton").addEventListener("click", gameManagerModule.updateWidth);
+gameManagerModule.beginGameLogic(currentWidth);
