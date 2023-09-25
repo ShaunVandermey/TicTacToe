@@ -1,6 +1,6 @@
 :root{
     --panel_bg_colour: #999999;
-    --panel_hover_colour: #FF4444;
+    --panel_hover_colour: #44FF44;
 }
 
 body{
@@ -9,6 +9,15 @@ body{
     justify-content: center;
     align-items: center;
     margin: 0;
+    height: 100vh;
+    width: auto;
+}
+
+#headerContent{
+    font-weight: 900;
+    font-size: 5em;
+    text-decoration: underline;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 #gridObjects{
@@ -16,12 +25,30 @@ body{
     grid-template-rows: repeat(3, 1fr);
     grid-template-columns: repeat(3, 1fr);
     gap: 3px;
+    height: 100%;
+    width: 100%;
+}
+
+.column{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.row{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
 }
 
 .gridPanel{
     background-color: var(--panel_bg_colour);
-    width: 200px;
-    height: 200px;
+    min-height: 10%;
+    max-height: 33%;
+    min-width: 10%;
+    max-width: 33%;
     text-align: center;
     line-height: 200px;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -31,7 +58,7 @@ body{
 }
 
 .gridPanel:hover{
-    outline: 3px solid var(--panel_hover_colour);
-    outline-offset: -3px;
-    /*border-color: var(--panel_hover_colour);*/
+    outline: 10px solid var(--panel_hover_colour);
+    outline-offset: -10px;
+    box-shadow: 0px 0px 2px 2px var(--panel_hover_colour);
 }

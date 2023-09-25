@@ -15,7 +15,7 @@ const gameManagerModule = (() => {
         player1 = personFactory("X");
         player2 = personFactory("O");
         currentPlayer = player1;
-        //create grid (3x3 for now, expandable later)
+        //create grid (3x3 for now, expandable later) TODO
         for (let index = 1; index <= 9; index++) {
             var panel = gridObjectFactory(index);
             panelArray.push(panel);
