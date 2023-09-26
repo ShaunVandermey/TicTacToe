@@ -55,7 +55,44 @@ const gameManagerModule = (() => {
     //the scope is wrapped in here, nothing can access this
     //massive algo to check for victory
     function checkVictory(){
+        //the painful bit.
 
+        //we check this every time we place a symbol down.
+        //there's gonna be some wasted effort here but that's okay.
+        //first extract all the panels that have a symbol
+        //for a victory, we need to iterate through each part of the algorithm
+        //a number of times equal to the current width of the grid (eg 3x3, etc)
+        //also, this needs to happen for each of the 4 directions we're checking in:
+        //down, right, down-left, and down-right
+        //the others don't need to be checked cause they're covered by the counterpart
+        //panels going up, left, up-left, and up-right
+        let foundVictory = false;
+        //check right
+        //for each panel:
+        //check the current index, current index + 1, etc... until currentWidth iterations
+        //if all are the same symbol, and there's exactly currentWidth amount, and the last index is an exact multiple of currentWidth
+        //victory
+
+        //check down
+        //for each panel
+        //check current index, current index + currentWidth, etc... until currentWidth iterations
+        //if all are same symbol, and there's exactly currentWidth amount, and the last index is less than currentWidth * currentWidth (mostly for error checking)
+        //victory
+
+        //check down-right
+        //check ONLY the first index
+        //check current index, current index + currentWidth + 1, etc... until currentwidth iterations
+        //if all are same symbol, and exactly currentWidth amount
+        //victory
+
+        //check down-left
+        //check ONLY [currentWidth]
+        //check current index, current index + currentWidth - 1, etc... until currentWidth iterations
+        //if all are same symbol, and exactly currentWidth amount
+        //victory
+
+        //then draw the victory on the screen
+        //a simple alert will do temporarily
     }
 
     //debug function mostly
