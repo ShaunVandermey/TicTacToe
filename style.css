@@ -3,6 +3,7 @@
     --panel_hover_colour: hsl(120, 100%, 63%);
     --content_height: 80vh;
     --current_width: 3;
+    --div_text_height_mult: 200pt;
 }
 
 #body{
@@ -42,6 +43,7 @@
     gap: 3px;
     height: var(--content_height);
     width: var(--content_height);
+
 }
 
 #leftColumn, #rightColumn{
@@ -63,15 +65,20 @@
 }
 
 .gridPanel{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     background-color: var(--panel_bg_colour);
     max-height: 100%;
+    min-height: 100%;
     max-width: 100%;
     text-align: center;
-    line-height: 300%;
+    line-height: 100%;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 3em;
+    font-size: calc(var(--div_text_height_mult, 1pt) / var(--current_width, 1pt));
     font-weight: 900;
-    border-radius: 20px;
+    border-radius: 10px;
 }
 
 .gridPanel:hover{
