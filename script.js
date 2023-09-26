@@ -60,6 +60,13 @@ const gameManagerModule = (() => {
         //we check this every time we place a symbol down.
         //there's gonna be some wasted effort here but that's okay.
         //first extract all the panels that have a symbol
+        let panelsWithSymbol = [];
+        for (let index = 0; index < panelArray.length; index++) {
+            if(panelArray[index].hasSymbol){
+                panelsWithSymbol.push(panelArray[index]);
+            }
+            
+        }
         //for a victory, we need to iterate through each part of the algorithm
         //a number of times equal to the current width of the grid (eg 3x3, etc)
         //also, this needs to happen for each of the 4 directions we're checking in:
@@ -67,8 +74,44 @@ const gameManagerModule = (() => {
         //the others don't need to be checked cause they're covered by the counterpart
         //panels going up, left, up-left, and up-right
         let foundVictory = false;
+        let winningArray = [];
         //check right
         //for each panel:
+        if(foundVictory == false){
+            for (let panelIndex = 0; panelIndex < panelsWithSymbol.length; panelIndex++) {
+                const panelObj = panelsWithSymbol[panelIndex];
+                let allSame = true;
+                let currentSymbol = panelObj.mySymbol;
+                let correctArray = [];
+                for (let index = 0; index < currentWidth; index++) {
+                    //const element = array[index];
+                    let currentIndex = index - 1;
+                    currentIndex += panelObj.returnIndex();
+                    //alert("current index:" + currentIndex);
+                    if(currentIndex <= panelArray.length - 1){
+                        //alert("current index is less than or equal to panel array length");
+                        if(panelArray[currentIndex].mySymbol == currentSymbol){
+                            //add to some other array to draw the line on
+                            correctArray.push(panelArray[currentIndex]);
+                            //alert("correct array push")
+                        }
+                        else{
+                            allSame = false;
+                            //alert("all same is false");
+                        }
+                    }
+                }
+                if(allSame && correctArray.length == currentWidth && correctArray[correctArray.length - 1].returnIndex() % currentWidth == 0){
+                    foundVictory = true;
+                    winningArray = correctArray;
+                }
+                else{
+                    //alert("didn't work: 1: " + allSame);
+                    //alert("didn't work: 2: " + correctArray.length == currentWidth);
+                    //alert("didn't work: 3: " + correctArray[correctArray.length - 1].returnIndex() % currentWidth == 0);
+                }
+            }
+        }
         //check the current index, current index + 1, etc... until currentWidth iterations
         //if all are the same symbol, and there's exactly currentWidth amount, and the last index is an exact multiple of currentWidth
         //victory
@@ -92,6 +135,11 @@ const gameManagerModule = (() => {
         //victory
 
         //then draw the victory on the screen
+        if(foundVictory == true){
+            //use the winning array and draw a victory line
+            //draw(correctArray);
+            alert("You win!");
+        }
         //a simple alert will do temporarily
     }
 
@@ -159,6 +207,9 @@ const gridObjectFactory = (index) => {
     newPanel.addEventListener("click", function(){
         gameManagerModule.applyMarker(panelObject.returnIndex());
     });
+    newPanel.addEventListener("click", function(){
+        gameManagerModule.checkForVictory();
+    });
     gridObjects.appendChild(newPanel);
 
     const panelObject = Object.create(null, {
@@ -198,10 +249,6 @@ const gridObjectFactory = (index) => {
 
 
 }
-
-//test
-
-
 
 
 
