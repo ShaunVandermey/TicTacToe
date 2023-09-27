@@ -16,7 +16,7 @@ const gameManagerModule = (() => {
         player2 = personFactory("O");
         currentPlayer = player1;
         //create grid (3x3 for now, expandable on subsequent resets)
-        for (let index = 1; index <= width * width; index++) {
+        for (let index = 0; index < width * width; index++) {
             var panel = gridObjectFactory(index);
             panelArray.push(panel);
         }
@@ -75,46 +75,108 @@ const gameManagerModule = (() => {
         //panels going up, left, up-left, and up-right
         let foundVictory = false;
         let winningArray = [];
+
+        const directions = {
+            Right: 0,
+            Down: 1,
+            DownRight: 2,
+            DownLeft: 3
+        }
+
+        //use a loop and the above enum to iterate through different directions,
+        //as the only thing that really changes is the algorithm
         //check right
         //for each panel:
-        if(foundVictory == false){
-            for (let panelIndex = 0; panelIndex < panelsWithSymbol.length; panelIndex++) {
-                const panelObj = panelsWithSymbol[panelIndex];
-                let allSame = true;
-                let currentSymbol = panelObj.mySymbol;
-                let correctArray = [];
-                for (let index = 0; index < currentWidth; index++) {
-                    //const element = array[index];
-                    let currentIndex = index - 1;
-                    currentIndex += panelObj.returnIndex();
-                    //alert("current index:" + currentIndex);
-                    if(currentIndex <= panelArray.length - 1){
-                        //alert("current index is less than or equal to panel array length");
-                        if(panelArray[currentIndex].mySymbol == currentSymbol){
-                            //add to some other array to draw the line on
-                            correctArray.push(panelArray[currentIndex]);
-                            //alert("correct array push")
-                        }
-                        else{
-                            allSame = false;
-                            //alert("all same is false");
+        for (let i = 0; i < Object.values(directions).length; i++) {
+            if(foundVictory == false){
+                for (let panelIndex = 0; panelIndex < panelsWithSymbol.length; panelIndex++) {
+                    const panelObj = panelsWithSymbol[panelIndex];
+                    let allSame = true;
+                    let currentSymbol = panelObj.mySymbol;
+                    let correctArray = [];
+                    if (foundVictory == false){
+                        for (let index = 0; index < currentWidth; index++) {
+                            //const element = array[index];
+                            let currentIndex;
+                            //switch depending on the direction
+                            switch (i) {
+                                case directions.Right:
+                                    currentIndex = index;
+                                    currentIndex += panelObj.returnIndex();
+                                    //also has to be on same row, though
+
+                                    //alert("checking:" + currentIndex);
+                                    break;
+                                case directions.Down:
+                                    //currentIndex = index;
+                                    currentIndex = panelObj.returnIndex() + (index * currentWidth);
+                                    break;
+                                case directions.DownRight:
+                                    //only need to check exactly the first item
+                                    if(panelObj.returnIndex() == 0){
+                                        currentIndex = 0;
+                                        currentIndex += (index * currentWidth) + index;
+                                    }
+                                    break;
+                                case directions.DownLeft:
+                                    //same again, except only need to start at the top right corner
+                                    if(panelObj.returnIndex() == currentWidth - 1){
+                                        currentIndex = currentWidth;
+                                        currentIndex += (index * currentWidth) - (index + 1);
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                            /*
+                            currentIndex = index - 1;
+                            currentIndex += panelObj.returnIndex();
+                            */
+                            //alert("current index:" + currentIndex);
+                            if(currentIndex <= panelArray.length - 1){
+                                //alert("current index is less than or equal to panel array length");
+                                if(panelArray[currentIndex].mySymbol == currentSymbol){
+                                    //add to some other array to draw the line on
+                                    correctArray.push(panelArray[currentIndex]);
+                                    //alert("correct array push")
+                                }
+                                else{
+                                    allSame = false;
+                                    //alert("all same is false");
+                                }
+                            }
                         }
                     }
-                }
-                if(allSame && correctArray.length == currentWidth && correctArray[correctArray.length - 1].returnIndex() % currentWidth == 0){
-                    foundVictory = true;
-                    winningArray = correctArray;
-                }
-                else{
-                    //alert("didn't work: 1: " + allSame);
-                    //alert("didn't work: 2: " + correctArray.length == currentWidth);
-                    //alert("didn't work: 3: " + correctArray[correctArray.length - 1].returnIndex() % currentWidth == 0);
+                    if(allSame && correctArray.length == currentWidth /*&& correctArray[correctArray.length - 1].returnIndex() % currentWidth == 0*/){
+                        //need to do some specific checking, eg Right must be on same row
+                        switch (i) {
+                            case directions.Right:
+                                if((correctArray[correctArray.length - 1].returnIndex() + 1) % currentWidth == 0){
+                                    foundVictory = true;
+                                    winningArray = correctArray;
+                                }
+                                break;
+                        
+                            default:
+                                foundVictory = true;
+                                winningArray = correctArray;
+                                break;
+                        }
+                        //foundVictory = true;
+                        //winningArray = correctArray;
+                    }
+                    else{
+                        //alert("didn't work: 1: " + allSame);
+                        //alert("didn't work: 2: " + correctArray.length == currentWidth);
+                        //alert("didn't work: 3: " + correctArray[correctArray.length - 1].returnIndex() % currentWidth == 0);
+                    }
                 }
             }
         }
         //check the current index, current index + 1, etc... until currentWidth iterations
         //if all are the same symbol, and there's exactly currentWidth amount, and the last index is an exact multiple of currentWidth
         //victory
+
 
         //check down
         //for each panel
@@ -150,7 +212,7 @@ const gameManagerModule = (() => {
 
     //applies the current player's marker to the panel of index, if that index is free
     function applyMarker(index){
-        item = panelArray[index-1];
+        item = panelArray[index];
         if(!item.hasSymbol){
             //apply current player's marker, switch to other player
             item.assignSymbol(currentPlayer.returnSymbol());
