@@ -25,7 +25,7 @@ const gameManagerModule = (() => {
     function updateWidth(){
         //get the correct element and if it is a number within certain amount,
         //like 3x3 to 10x10, update the currentWidth var to be that number
-        //then reset grid (needs function TODO)
+        prevWidth = currentWidth;
         currentWidth = document.getElementById("widthInput").value;
         if (!isNaN(currentWidth)){
             if (currentWidth >= minWidth && currentWidth <= maxWidth){
@@ -37,11 +37,22 @@ const gameManagerModule = (() => {
                 beginGameLogic(currentWidth);
             }
             else{
-                alert("The new width must be between "+ minWidth +" and "+ maxWidth +" (inclusive)");
+                if(currentWidth == ""){
+                    //the number is not specified, reset with current dimension
+                    currentWidth = prevWidth;
+                    resetGrid();
+                    parseInt(currentWidth);
+                    panelArray = [];
+                    document.documentElement.style.setProperty('--current_width', currentWidth);
+                    beginGameLogic(currentWidth);
+                }
+                else{
+                    alert("The new width must be between "+ minWidth +" and "+ maxWidth +" (inclusive)");
+                }
             }
         }
         else{
-            alert("The new width needs to be a number.")
+            alert("The new width needs to be a number.");
         }
     }
 
@@ -52,10 +63,8 @@ const gameManagerModule = (() => {
         }
     }
 
-    //the scope is wrapped in here, nothing can access this
     //massive algo to check for victory
     function checkVictory(){
-        //the painful bit.
 
         //we check this every time we place a symbol down.
         //there's gonna be some wasted effort here but that's okay.
@@ -85,8 +94,28 @@ const gameManagerModule = (() => {
 
         //use a loop and the above enum to iterate through different directions,
         //as the only thing that really changes is the algorithm
-        //check right
-        //for each panel:
+        //check right, down, down-right, down-left for each panel
+        //check the current index, current index + 1, etc... until currentWidth iterations
+        //if all are the same symbol, and there's exactly currentWidth amount, and the last index is an exact multiple of currentWidth
+        //victory
+
+        //check down
+        //for each panel
+        //check current index, current index + currentWidth, etc... until currentWidth iterations
+        //if all are same symbol, and there's exactly currentWidth amount, and the last index is less than currentWidth * currentWidth (mostly for error checking)
+        //victory
+
+        //check down-right
+        //check ONLY the first index
+        //check current index, current index + currentWidth + 1, etc... until currentwidth iterations
+        //if all are same symbol, and exactly currentWidth amount
+        //victory
+
+        //check down-left
+        //check ONLY [currentWidth]
+        //check current index, current index + currentWidth - 1, etc... until currentWidth iterations
+        //if all are same symbol, and exactly currentWidth amount
+        //victory
         for (let i = 0; i < Object.values(directions).length; i++) {
             if(foundVictory == false){
                 for (let panelIndex = 0; panelIndex < panelsWithSymbol.length; panelIndex++) {
@@ -162,39 +191,13 @@ const gameManagerModule = (() => {
                                 winningArray = correctArray;
                                 break;
                         }
-                        //foundVictory = true;
-                        //winningArray = correctArray;
                     }
                     else{
-                        //alert("didn't work: 1: " + allSame);
-                        //alert("didn't work: 2: " + correctArray.length == currentWidth);
-                        //alert("didn't work: 3: " + correctArray[correctArray.length - 1].returnIndex() % currentWidth == 0);
+
                     }
                 }
             }
         }
-        //check the current index, current index + 1, etc... until currentWidth iterations
-        //if all are the same symbol, and there's exactly currentWidth amount, and the last index is an exact multiple of currentWidth
-        //victory
-
-
-        //check down
-        //for each panel
-        //check current index, current index + currentWidth, etc... until currentWidth iterations
-        //if all are same symbol, and there's exactly currentWidth amount, and the last index is less than currentWidth * currentWidth (mostly for error checking)
-        //victory
-
-        //check down-right
-        //check ONLY the first index
-        //check current index, current index + currentWidth + 1, etc... until currentwidth iterations
-        //if all are same symbol, and exactly currentWidth amount
-        //victory
-
-        //check down-left
-        //check ONLY [currentWidth]
-        //check current index, current index + currentWidth - 1, etc... until currentWidth iterations
-        //if all are same symbol, and exactly currentWidth amount
-        //victory
 
         //then draw the victory on the screen
         if(foundVictory == true){
