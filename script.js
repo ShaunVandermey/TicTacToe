@@ -116,13 +116,14 @@ const gameManagerModule = (() => {
         //check current index, current index + currentWidth - 1, etc... until currentWidth iterations
         //if all are same symbol, and exactly currentWidth amount
         //victory
+        let correctArray = [];
         for (let i = 0; i < Object.values(directions).length; i++) {
             if(foundVictory == false){
                 for (let panelIndex = 0; panelIndex < panelsWithSymbol.length; panelIndex++) {
                     const panelObj = panelsWithSymbol[panelIndex];
                     let allSame = true;
                     let currentSymbol = panelObj.mySymbol;
-                    let correctArray = [];
+                    correctArray = [];
                     if (foundVictory == false){
                         for (let index = 0; index < currentWidth; index++) {
                             //const element = array[index];
@@ -157,26 +158,18 @@ const gameManagerModule = (() => {
                                 default:
                                     break;
                             }
-                            /*
-                            currentIndex = index - 1;
-                            currentIndex += panelObj.returnIndex();
-                            */
-                            //alert("current index:" + currentIndex);
                             if(currentIndex <= panelArray.length - 1){
-                                //alert("current index is less than or equal to panel array length");
                                 if(panelArray[currentIndex].mySymbol == currentSymbol){
                                     //add to some other array to draw the line on
                                     correctArray.push(panelArray[currentIndex]);
-                                    //alert("correct array push")
                                 }
                                 else{
                                     allSame = false;
-                                    //alert("all same is false");
                                 }
                             }
                         }
                     }
-                    if(allSame && correctArray.length == currentWidth /*&& correctArray[correctArray.length - 1].returnIndex() % currentWidth == 0*/){
+                    if(allSame && correctArray.length == currentWidth){
                         //need to do some specific checking, eg Right must be on same row
                         switch (i) {
                             case directions.Right:
@@ -204,6 +197,14 @@ const gameManagerModule = (() => {
             //use the winning array and draw a victory line
             //draw(correctArray);
             alert("You win!");
+            //just need to make an array of the elements
+            let objArray = [];
+            //alert(winningArray.length);
+            for (let index = 0; index < winningArray.length; index++) {
+                objArray.push(winningArray[index].myObject);
+            }
+            //alert(objArray.length);
+            drawLineModule.drawLineBetweenElements(objArray);
         }
         //a simple alert will do temporarily
     }
@@ -244,6 +245,55 @@ const gameManagerModule = (() => {
 
 })();
 
+const drawLineModule = (() => {
+
+    //draw a line between multiple elements, ideally only between the first and last ones
+    function drawLineBetweenElements(elements){
+        //draw line between first element and last element
+        let firstElement = elements[0];
+        let lastElement = elements[elements.length - 1];
+        let firstPos = getElementCenterPosition(firstElement);
+        let lastPos = getElementCenterPosition(lastElement);
+        //alert(firstPosition.centerX + " " + firstPosition.centerY);
+
+
+        //what's the space that we're drawing it on? maybe the gridObjects?
+        //nope, needs to be a canvas. create a canvas with the dimensions of gridObjects
+        let canvas = document.createElement("canvas");
+
+        let objectSize = document.getElementById("body").getBoundingClientRect();
+
+        canvas.width = objectSize.width;
+        canvas.height = objectSize.height;
+        canvas.style.position = "absolute";
+        canvas.style.left = objectSize.left;
+        canvas.style.top = objectSize.top;
+        document.getElementById("body").appendChild(canvas);
+        let line = canvas.getContext("2d");
+        line.beginPath();
+        line.moveTo(firstPos.centerX, firstPos.centerY);
+        line.strokeStyle = "green";
+        line.lineWidth = 5;
+        line.lineTo(lastPos.centerX, lastPos.centerY);
+        line.stroke();
+    }
+
+    //input an element, and get out a position to draw the line to
+    function getElementCenterPosition(element){
+        let rect = element.getBoundingClientRect();
+        let centerX = (rect.left + rect.right) / 2;
+        let centerY = (rect.top + rect.bottom) / 2;
+        let center = {
+            centerX,
+            centerY
+        };
+        return center;
+    }
+
+    return{
+        drawLineBetweenElements
+    }
+})();
 
 //factory
 const personFactory = (playerSymbol) => {
@@ -350,3 +400,15 @@ let minWidth = 3;
 let maxWidth = 10;
 document.getElementById("resetButton").addEventListener("click", gameManagerModule.updateWidth);
 gameManagerModule.beginGameLogic(currentWidth);
+
+//TODO: please make it so you can click on the web elements after the canvas is drawn
+//make the variables for the canvas less of a magic number
+//double check the message that appears when there's a draw
+//display the current player on the right side of the screen
+//move the bottom of the grid up from the bottom of the page just a little
+//better align the reset button
+//somehow come up with a bot player?
+//let player choose between playing against bot or player
+//maybe colour the player's symbols a little differently?
+//probably some more feattures after that
+//add my own github link to the footer
