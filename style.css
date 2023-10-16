@@ -2,6 +2,7 @@
     --panel_bg_colour: #999999;
     --panel_hover_colour: hsl(120, 100%, 63%);
     --content_height: 80vh;
+    --content_padding: 4vh;
     --current_width: 3;
     --div_text_height_mult: 200pt;
 }
@@ -18,6 +19,9 @@
 
 #headerDiv{
     height: calc(100vh - var(--content_height));
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 #headerContent{
@@ -41,13 +45,26 @@
     grid-template-rows: repeat(var(--current_width), 1fr);
     grid-template-columns: repeat(var(--current_width), 1fr);
     gap: 3px;
-    height: var(--content_height);
-    width: var(--content_height);
+    height: calc(var(--content_height) - var(--content_padding));
+    width: calc(var(--content_height) - var(--content_padding));
 
 }
 
 #leftColumn, #rightColumn{
     width: calc((100vh - var(--content_height)) / 2)
+}
+
+#resetButtons{
+    justify-content: center;
+}
+
+#widthInput{
+    min-width: 25px;
+    max-width: 75px;
+}
+
+#canvas{
+    pointer-events: none;
 }
 
 .column{

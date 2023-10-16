@@ -9,6 +9,7 @@ const gameManagerModule = (() => {
     let currentPlayer = null;
     let player1 = null;
     let player2 = null;
+    let gameVictory = false;
 
     function beginGameLogic(width){
         //create players (no AI atm, give one X and one O)
@@ -25,6 +26,7 @@ const gameManagerModule = (() => {
     function updateWidth(){
         //get the correct element and if it is a number within certain amount,
         //like 3x3 to 10x10, update the currentWidth var to be that number
+        gameVictory = false;
         prevWidth = currentWidth;
         currentWidth = document.getElementById("widthInput").value;
         if (!isNaN(currentWidth)){
@@ -66,147 +68,155 @@ const gameManagerModule = (() => {
     //massive algo to check for victory
     function checkVictory(){
 
-        //we check this every time we place a symbol down.
-        //there's gonna be some wasted effort here but that's okay.
-        //first extract all the panels that have a symbol
-        let panelsWithSymbol = [];
-        for (let index = 0; index < panelArray.length; index++) {
-            if(panelArray[index].hasSymbol){
-                panelsWithSymbol.push(panelArray[index]);
+        //if the game has not already been won
+        if(gameVictory == false){
+            //we check this every time we place a symbol down.
+            //there's gonna be some wasted effort here but that's okay.
+            //first extract all the panels that have a symbol
+            let panelsWithSymbol = [];
+            for (let index = 0; index < panelArray.length; index++) {
+                if(panelArray[index].hasSymbol){
+                    panelsWithSymbol.push(panelArray[index]);
+                }
+                
             }
-            
-        }
-        //for a victory, we need to iterate through each part of the algorithm
-        //a number of times equal to the current width of the grid (eg 3x3, etc)
-        //also, this needs to happen for each of the 4 directions we're checking in:
-        //down, right, down-left, and down-right
-        //the others don't need to be checked cause they're covered by the counterpart
-        //panels going up, left, up-left, and up-right
-        let foundVictory = false;
-        let winningArray = [];
+            //for a victory, we need to iterate through each part of the algorithm
+            //a number of times equal to the current width of the grid (eg 3x3, etc)
+            //also, this needs to happen for each of the 4 directions we're checking in:
+            //down, right, down-left, and down-right
+            //the others don't need to be checked cause they're covered by the counterpart
+            //panels going up, left, up-left, and up-right
+            let foundVictory = false;
+            let winningArray = [];
 
-        const directions = {
-            Right: 0,
-            Down: 1,
-            DownRight: 2,
-            DownLeft: 3
-        }
+            const directions = {
+                Right: 0,
+                Down: 1,
+                DownRight: 2,
+                DownLeft: 3
+            }
 
-        //use a loop and the above enum to iterate through different directions,
-        //as the only thing that really changes is the algorithm
-        //check right, down, down-right, down-left for each panel
-        //check the current index, current index + 1, etc... until currentWidth iterations
-        //if all are the same symbol, and there's exactly currentWidth amount, and the last index is an exact multiple of currentWidth
-        //victory
+            //use a loop and the above enum to iterate through different directions,
+            //as the only thing that really changes is the algorithm
+            //check right, down, down-right, down-left for each panel
+            //check the current index, current index + 1, etc... until currentWidth iterations
+            //if all are the same symbol, and there's exactly currentWidth amount, and the last index is an exact multiple of currentWidth
+            //victory
 
-        //check down
-        //for each panel
-        //check current index, current index + currentWidth, etc... until currentWidth iterations
-        //if all are same symbol, and there's exactly currentWidth amount, and the last index is less than currentWidth * currentWidth (mostly for error checking)
-        //victory
+            //check down
+            //for each panel
+            //check current index, current index + currentWidth, etc... until currentWidth iterations
+            //if all are same symbol, and there's exactly currentWidth amount, and the last index is less than currentWidth * currentWidth (mostly for error checking)
+            //victory
 
-        //check down-right
-        //check ONLY the first index
-        //check current index, current index + currentWidth + 1, etc... until currentwidth iterations
-        //if all are same symbol, and exactly currentWidth amount
-        //victory
+            //check down-right
+            //check ONLY the first index
+            //check current index, current index + currentWidth + 1, etc... until currentwidth iterations
+            //if all are same symbol, and exactly currentWidth amount
+            //victory
 
-        //check down-left
-        //check ONLY [currentWidth]
-        //check current index, current index + currentWidth - 1, etc... until currentWidth iterations
-        //if all are same symbol, and exactly currentWidth amount
-        //victory
-        let correctArray = [];
-        for (let i = 0; i < Object.values(directions).length; i++) {
-            if(foundVictory == false){
-                for (let panelIndex = 0; panelIndex < panelsWithSymbol.length; panelIndex++) {
-                    const panelObj = panelsWithSymbol[panelIndex];
-                    let allSame = true;
-                    let currentSymbol = panelObj.mySymbol;
-                    correctArray = [];
-                    if (foundVictory == false){
-                        for (let index = 0; index < currentWidth; index++) {
-                            //const element = array[index];
-                            let currentIndex;
-                            //switch depending on the direction
+            //check down-left
+            //check ONLY [currentWidth]
+            //check current index, current index + currentWidth - 1, etc... until currentWidth iterations
+            //if all are same symbol, and exactly currentWidth amount
+            //victory
+            let correctArray = [];
+            for (let i = 0; i < Object.values(directions).length; i++) {
+                if(foundVictory == false){
+                    for (let panelIndex = 0; panelIndex < panelsWithSymbol.length; panelIndex++) {
+                        const panelObj = panelsWithSymbol[panelIndex];
+                        let allSame = true;
+                        let currentSymbol = panelObj.mySymbol;
+                        correctArray = [];
+                        if (foundVictory == false){
+                            for (let index = 0; index < currentWidth; index++) {
+                                //const element = array[index];
+                                let currentIndex;
+                                //switch depending on the direction
+                                switch (i) {
+                                    case directions.Right:
+                                        currentIndex = index;
+                                        currentIndex += panelObj.returnIndex();
+                                        //also has to be on same row, though
+
+                                        //alert("checking:" + currentIndex);
+                                        break;
+                                    case directions.Down:
+                                        //currentIndex = index;
+                                        currentIndex = panelObj.returnIndex() + (index * currentWidth);
+                                        break;
+                                    case directions.DownRight:
+                                        //only need to check exactly the first item
+                                        if(panelObj.returnIndex() == 0){
+                                            currentIndex = 0;
+                                            currentIndex += (index * currentWidth) + index;
+                                        }
+                                        break;
+                                    case directions.DownLeft:
+                                        //same again, except only need to start at the top right corner
+                                        if(panelObj.returnIndex() == currentWidth - 1){
+                                            currentIndex = currentWidth;
+                                            currentIndex += (index * currentWidth) - (index + 1);
+                                        }
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                if(currentIndex <= panelArray.length - 1){
+                                    if(panelArray[currentIndex].mySymbol == currentSymbol){
+                                        //add to some other array to draw the line on
+                                        correctArray.push(panelArray[currentIndex]);
+                                    }
+                                    else{
+                                        allSame = false;
+                                    }
+                                }
+                            }
+                        }
+                        if(allSame && correctArray.length == currentWidth){
+                            //need to do some specific checking, eg Right must be on same row
                             switch (i) {
                                 case directions.Right:
-                                    currentIndex = index;
-                                    currentIndex += panelObj.returnIndex();
-                                    //also has to be on same row, though
-
-                                    //alert("checking:" + currentIndex);
-                                    break;
-                                case directions.Down:
-                                    //currentIndex = index;
-                                    currentIndex = panelObj.returnIndex() + (index * currentWidth);
-                                    break;
-                                case directions.DownRight:
-                                    //only need to check exactly the first item
-                                    if(panelObj.returnIndex() == 0){
-                                        currentIndex = 0;
-                                        currentIndex += (index * currentWidth) + index;
+                                    if((correctArray[correctArray.length - 1].returnIndex() + 1) % currentWidth == 0){
+                                        foundVictory = true;
+                                        gameVictory = true;
+                                        winningArray = correctArray;
                                     }
                                     break;
-                                case directions.DownLeft:
-                                    //same again, except only need to start at the top right corner
-                                    if(panelObj.returnIndex() == currentWidth - 1){
-                                        currentIndex = currentWidth;
-                                        currentIndex += (index * currentWidth) - (index + 1);
-                                    }
-                                    break;
+                            
                                 default:
+                                    foundVictory = true;
+                                    gameVictory = true;
+                                    winningArray = correctArray;
                                     break;
                             }
-                            if(currentIndex <= panelArray.length - 1){
-                                if(panelArray[currentIndex].mySymbol == currentSymbol){
-                                    //add to some other array to draw the line on
-                                    correctArray.push(panelArray[currentIndex]);
-                                }
-                                else{
-                                    allSame = false;
-                                }
-                            }
                         }
-                    }
-                    if(allSame && correctArray.length == currentWidth){
-                        //need to do some specific checking, eg Right must be on same row
-                        switch (i) {
-                            case directions.Right:
-                                if((correctArray[correctArray.length - 1].returnIndex() + 1) % currentWidth == 0){
-                                    foundVictory = true;
-                                    winningArray = correctArray;
-                                }
-                                break;
-                        
-                            default:
-                                foundVictory = true;
-                                winningArray = correctArray;
-                                break;
-                        }
-                    }
-                    else{
+                        else{
 
+                        }
                     }
                 }
             }
-        }
 
-        //then draw the victory on the screen
-        if(foundVictory == true){
-            //use the winning array and draw a victory line
-            //draw(correctArray);
-            alert("You win!");
-            //just need to make an array of the elements
-            let objArray = [];
-            //alert(winningArray.length);
-            for (let index = 0; index < winningArray.length; index++) {
-                objArray.push(winningArray[index].myObject);
+            //then draw the victory on the screen
+            if(foundVictory == true){
+                //use the winning array and draw a victory line
+                //draw(correctArray);
+                alert("You win!");
+                //just need to make an array of the elements
+                let objArray = [];
+                //alert(winningArray.length);
+                for (let index = 0; index < winningArray.length; index++) {
+                    objArray.push(winningArray[index].myObject);
+                }
+                //alert(objArray.length);
+                drawLineModule.drawLineBetweenElements(objArray);
             }
-            //alert(objArray.length);
-            drawLineModule.drawLineBetweenElements(objArray);
+            else if(panelsWithSymbol.length == panelArray.length){
+                alert("A draw!");
+            }
+            //a simple alert will do temporarily
         }
-        //a simple alert will do temporarily
     }
 
     //debug function mostly
@@ -216,22 +226,24 @@ const gameManagerModule = (() => {
 
     //applies the current player's marker to the panel of index, if that index is free
     function applyMarker(index){
-        item = panelArray[index];
-        if(!item.hasSymbol){
-            //apply current player's marker, switch to other player
-            item.assignSymbol(currentPlayer.returnSymbol());
-            if(currentPlayer === player1){
-                currentPlayer = player2;
+            if(gameVictory == false){
+            item = panelArray[index];
+            if(!item.hasSymbol){
+                //apply current player's marker, switch to other player
+                item.assignSymbol(currentPlayer.returnSymbol());
+                if(currentPlayer === player1){
+                    currentPlayer = player2;
+                }
+                else{
+                    currentPlayer = player1;
+                }
+                item.hasSymbol = true;
             }
             else{
-                currentPlayer = player1;
+                alert("You can't play on a tile that's already got a symbol!");
             }
-            item.hasSymbol = true;
-        }
-        else{
-            alert("You can't play on a tile that's already got a symbol!");
-        }
 
+        }
     }
 
     //and then we have to explicitly return the things we want to access
@@ -247,8 +259,14 @@ const gameManagerModule = (() => {
 
 const drawLineModule = (() => {
 
+    //vars for tweaking
+    let canvasLineWidth = 5;
+    let canvasLineColour = "green";
     //draw a line between multiple elements, ideally only between the first and last ones
     function drawLineBetweenElements(elements){
+
+        
+
         //draw line between first element and last element
         let firstElement = elements[0];
         let lastElement = elements[elements.length - 1];
@@ -260,6 +278,7 @@ const drawLineModule = (() => {
         //what's the space that we're drawing it on? maybe the gridObjects?
         //nope, needs to be a canvas. create a canvas with the dimensions of gridObjects
         let canvas = document.createElement("canvas");
+        canvas.id = "canvas";
 
         let objectSize = document.getElementById("body").getBoundingClientRect();
 
@@ -272,8 +291,8 @@ const drawLineModule = (() => {
         let line = canvas.getContext("2d");
         line.beginPath();
         line.moveTo(firstPos.centerX, firstPos.centerY);
-        line.strokeStyle = "green";
-        line.lineWidth = 5;
+        line.strokeStyle = canvasLineColour;
+        line.lineWidth = canvasLineWidth;
         line.lineTo(lastPos.centerX, lastPos.centerY);
         line.stroke();
     }
@@ -368,31 +387,11 @@ const gridObjectFactory = (index) => {
 
 
 //ok, let's list all the things we need to be able to do
-//have an array of tiles that are clickable
-//when tile is clicked, the current player places their marker in that space
-//the current player is determined randomly to start, then alternates after every tile click
-//the marker is determined randomly at the same time as player
+
+
+
 //after the marker is added, check for a win or a tie
-//a player wins by having 3 of their marker in a row
 //a player draws if there is no winner and there are no more open spaces
-//a button to reset the game
-
-//we are going to create multiple tiles
-//onClick => changeMarker(currentPlayer.marker);
-//reset();
-//var index;
-//on create => add to document in the correct spot, and insert self into the gameboard module
-
-//multiple players
-//var myIcon
-
-//a single game manager
-//array for the tile objects
-//check to see if victory is achieved (long algorithm)
-//restartGame()
-//createGame(widthOfGrid)
-//var players[]
-//var currentPlayer
 
 //initialise at 3, let them create their own width on resets
 let currentWidth = 3;
@@ -401,14 +400,12 @@ let maxWidth = 10;
 document.getElementById("resetButton").addEventListener("click", gameManagerModule.updateWidth);
 gameManagerModule.beginGameLogic(currentWidth);
 
-//TODO: please make it so you can click on the web elements after the canvas is drawn
-//make the variables for the canvas less of a magic number
-//double check the message that appears when there's a draw
+//TODO:
 //display the current player on the right side of the screen
-//move the bottom of the grid up from the bottom of the page just a little
-//better align the reset button
+//figure out button aligning better
 //somehow come up with a bot player?
 //let player choose between playing against bot or player
 //maybe colour the player's symbols a little differently?
-//probably some more feattures after that
+//probably some more features after that
+//add a footer
 //add my own github link to the footer
