@@ -2,6 +2,7 @@
     --panel_bg_colour: #999999;
     --panel_hover_colour: hsl(120, 100%, 63%);
     --content_height: 80vh;
+    --content_gap: 5vh;
     --content_padding: 4vh;
     --current_width: 3;
     --div_text_height_mult: 200pt;
@@ -10,7 +11,7 @@
 #body{
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     align-items:center;
     margin: 0;
     height: 100vh;
@@ -18,7 +19,7 @@
 }
 
 #headerDiv{
-    height: calc(100vh - var(--content_height));
+    height: calc(((100vh - var(--content_height)) / 2) + var(--content_gap));
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -45,13 +46,13 @@
     grid-template-rows: repeat(var(--current_width), 1fr);
     grid-template-columns: repeat(var(--current_width), 1fr);
     gap: 3px;
-    height: calc(var(--content_height) - var(--content_padding));
-    width: calc(var(--content_height) - var(--content_padding));
+    height: calc(var(--content_height) - var(--content_padding) - var(--content_gap));
+    width: calc(var(--content_height) - var(--content_padding) - var(--content_gap));
 
 }
 
 #leftColumn, #rightColumn{
-    width: calc((100vh - var(--content_height)) / 2)
+    width: calc((100vh - var(--content_height)) / 2);
 }
 
 #resetButtons{
@@ -109,11 +110,13 @@
     vertical-align: middle;
     background-color: rgb(80, 80, 80);
     color: white;
+    /*height: calc((100vh - var(--content_height)) / 2);*/ 
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 5vh;
+    max-height: 8vh;
     padding: 20px 0px;
     justify-self: flex-end;
 }
