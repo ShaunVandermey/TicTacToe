@@ -103,3 +103,17 @@
     outline-offset: -10px;
     box-shadow: 0px 0px 2px 2px var(--panel_hover_colour);
 }
+
+#copyrightFooter{
+    text-align: center;
+    vertical-align: middle;
+    background-color: rgb(80, 80, 80);
+    color: white;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 5vh;
+    padding: 20px 0px;
+    justify-self: flex-end;
+}
