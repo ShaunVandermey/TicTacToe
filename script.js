@@ -16,6 +16,7 @@ const gameManagerModule = (() => {
         player1 = personFactory("X");
         player2 = personFactory("O");
         currentPlayer = player1;
+        updateNextPlayerDisplay(currentPlayer);
         //create grid (3x3 for now, expandable on subsequent resets)
         for (let index = 0; index < width * width; index++) {
             var panel = gridObjectFactory(index);
@@ -238,12 +239,19 @@ const gameManagerModule = (() => {
                     currentPlayer = player1;
                 }
                 item.hasSymbol = true;
+                updateNextPlayerDisplay(currentPlayer);
             }
             else{
                 alert("You can't play on a tile that's already got a symbol!");
             }
 
         }
+    }
+
+    function updateNextPlayerDisplay(currentPlayerSymbol){
+        //update the content of the display with the correct id to show the player who places next
+        let header = document.getElementById("nextPlayerDisplay");
+        header.textContent = currentPlayerSymbol.mySymbol;
     }
 
     //and then we have to explicitly return the things we want to access

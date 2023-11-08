@@ -8,6 +8,10 @@
     --div_text_height_mult: 200pt;
 }
 
+*{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
 #body{
     display: flex;
     flex-direction: column;
@@ -29,7 +33,6 @@
     font-weight: 900;
     font-size: 5em;
     text-decoration: underline;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
 }
 
@@ -93,7 +96,6 @@
     max-width: 100%;
     text-align: center;
     line-height: 100%;
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: calc(var(--div_text_height_mult, 1pt) / var(--current_width, 1pt));
     font-weight: 900;
     border-radius: 10px;
