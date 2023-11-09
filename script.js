@@ -59,11 +59,22 @@ const gameManagerModule = (() => {
         }
     }
 
+    //remove current items only
     function resetGrid(){
         let gridChildren = document.getElementById("gridObjects");
         while (gridChildren.firstChild) {
             gridChildren.removeChild(gridChildren.lastChild);
         }
+    }
+
+    //remove then repopulate
+    function restartGrid(){
+        gameVictory = false;
+        resetGrid();
+        parseInt(currentWidth);
+                panelArray = [];
+                document.documentElement.style.setProperty('--current_width', currentWidth);
+                beginGameLogic(currentWidth);
     }
 
     //massive algo to check for victory
@@ -260,7 +271,8 @@ const gameManagerModule = (() => {
         checkForVictory: checkVictory,
         sayIndex: sayIndex,
         applyMarker,
-        updateWidth
+        updateWidth,
+        restartGrid
     }
 
 })();
@@ -405,7 +417,8 @@ const gridObjectFactory = (index) => {
 let currentWidth = 3;
 let minWidth = 3;
 let maxWidth = 10;
-document.getElementById("resetButton").addEventListener("click", gameManagerModule.updateWidth);
+document.getElementById("resizeButton").addEventListener("click", gameManagerModule.updateWidth);
+document.getElementById("restartButton").addEventListener("click", gameManagerModule.restartGrid)
 gameManagerModule.beginGameLogic(currentWidth);
 
 //TODO:
