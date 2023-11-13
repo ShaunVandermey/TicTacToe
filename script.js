@@ -17,6 +17,7 @@ const gameManagerModule = (() => {
         player2 = personFactory("O");
         currentPlayer = player1;
         updateNextPlayerDisplay(currentPlayer);
+        drawLineModule.resetLine();
         //create grid (3x3 for now, expandable on subsequent resets)
         for (let index = 0; index < width * width; index++) {
             var panel = gridObjectFactory(index);
@@ -29,6 +30,7 @@ const gameManagerModule = (() => {
         //like 3x3 to 10x10, update the currentWidth var to be that number
         gameVictory = false;
         prevWidth = currentWidth;
+        drawLineModule.resetLine();
         currentWidth = document.getElementById("widthInput").value;
         if (!isNaN(currentWidth)){
             if (currentWidth >= minWidth && currentWidth <= maxWidth){
@@ -65,16 +67,18 @@ const gameManagerModule = (() => {
         while (gridChildren.firstChild) {
             gridChildren.removeChild(gridChildren.lastChild);
         }
+        drawLineModule.resetLine();
     }
 
     //remove then repopulate
     function restartGrid(){
+        drawLineModule.resetLine();
         gameVictory = false;
         resetGrid();
         parseInt(currentWidth);
-                panelArray = [];
-                document.documentElement.style.setProperty('--current_width', currentWidth);
-                beginGameLogic(currentWidth);
+        panelArray = [];
+        document.documentElement.style.setProperty('--current_width', currentWidth);
+        beginGameLogic(currentWidth);
     }
 
     //massive algo to check for victory
@@ -329,8 +333,18 @@ const drawLineModule = (() => {
         return center;
     }
 
+    //remove the current line and reset the canvas
+    function resetLine(){
+        let canvas = document.getElementById("canvas");
+        if(canvas != null){
+            let obj = canvas.getContext("2d");
+            obj.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    }
+
     return{
-        drawLineBetweenElements
+        drawLineBetweenElements,
+        resetLine
     }
 })();
 
